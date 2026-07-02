@@ -241,6 +241,19 @@
       text-transform: uppercase;
     }
 
+    .tarjeta-poster {
+      width: 100%;
+      aspect-ratio: 2/3;
+      object-fit: cover;
+      display: block;
+      margin-bottom: 0.75rem;
+      filter: grayscale(20%);
+      transition: filter 0.3s;
+    }
+    .tarjeta:hover .tarjeta-poster {
+      filter: grayscale(0%);
+    }
+
     /* sin resultados */
     #sin-resultados {
       display: none;
@@ -398,25 +411,25 @@ const datos = [
   { mes:6, dia:29, nombre:'Bernard Herrmann', tipo:'Compositor' },
   { mes:6, dia:30, nombre:'Diego Trujillo', tipo:'Actor' },
   // JULIO
-  { mes:7, dia:1,  nombre:'William Wyler', tipo:'Director' },
-  { mes:7, dia:1,  nombre:'Sydney Pollack', tipo:'Director' },
+  { mes:7, dia:1,  nombre:'William Wyler', tipo:'Director', poster:'william-wyler.webp' },
+  { mes:7, dia:1,  nombre:'Sydney Pollack', tipo:'Director', poster:'sydney-pollack.webp' },
   { mes:7, dia:3,  nombre:'Ken Russell', tipo:'Director' },
-  { mes:7, dia:3,  nombre:'Franz Kafka', tipo:'Escritor' },
-  { mes:7, dia:3,  nombre:'Kool and the Gang', tipo:'Música · primer sencillo' },
+  { mes:7, dia:3,  nombre:'Franz Kafka', tipo:'Escritor', poster:'franz-kafka.webp' },
+  { mes:7, dia:3,  nombre:'Kool and the Gang', tipo:'Música · primer sencillo', poster:'kool-thegang.webp' },
   { mes:7, dia:4,  nombre:'Neil Simon', tipo:'Dramaturgo' },
   { mes:7, dia:6,  nombre:'Janet Leigh', tipo:'Actriz' },
-  { mes:7, dia:6,  nombre:'Frida Kahlo', tipo:'Artista plástica' },
+  { mes:7, dia:6,  nombre:'Frida Kahlo', tipo:'Artista plástica', poster:'frida-kahlo.webp' },
   { mes:7, dia:6,  nombre:'Jennifer Saunders', tipo:'Actriz / Guionista' },
-  { mes:7, dia:7,  nombre:'Ringo Starr', tipo:'Música' },
-  { mes:7, dia:7,  nombre:'George Cukor', tipo:'Director' },
-  { mes:7, dia:7,  nombre:'Vittorio De Sica', tipo:'Director' },
-  { mes:7, dia:10, nombre:'Nicolás Guillén', tipo:'Poeta' },
-  { mes:7, dia:13, nombre:'Sara González', tipo:'Música' },
-  { mes:7, dia:13, nombre:'Philip Seymour Hoffman', tipo:'Actor' },
+  { mes:7, dia:7,  nombre:'Ringo Starr', tipo:'Música', poster:'ringo-starr.webp' },
+  { mes:7, dia:7,  nombre:'George Cukor', tipo:'Director', poster:'george-cukor.webp' },
+  { mes:7, dia:7,  nombre:'Vittorio De Sica', tipo:'Director', poster:'vittorio-desica.webp' },
+  { mes:7, dia:10, nombre:'Nicolás Guillén', tipo:'Poeta', poster:'nicolas-guillen.webp' },
+  { mes:7, dia:13, nombre:'Sara González', tipo:'Música', poster:'sara-gonzalez.webp' },
+  { mes:7, dia:13, nombre:'Philip Seymour Hoffman', tipo:'Actor', poster:'philip-hoffman.webp' },
   { mes:7, dia:14, nombre:'Ingmar Bergman', tipo:'Director' },
-  { mes:7, dia:26, nombre:'Luis Carbonell', tipo:'Artista' },
-  { mes:7, dia:26, nombre:'Vladimir Cruz', tipo:'Actor' },
-  { mes:7, dia:26, nombre:'Stanley Kubrick', tipo:'Director' },
+  { mes:7, dia:26, nombre:'Luis Carbonell', tipo:'Artista', poster:'luis-carbonell.webp' },
+  { mes:7, dia:26, nombre:'Vladimir Cruz', tipo:'Actor', poster:'vladimir-cruz.webp' },
+  { mes:7, dia:26, nombre:'Stanley Kubrick', tipo:'Director', poster:'stanley-kubrick.webp' },
   // AGOSTO
   { mes:8, dia:4,  nombre:'Brindis de Salas', tipo:'Músico' },
   { mes:8, dia:4,  nombre:'Carlos Ruiz de la Tejera', tipo:'Cineasta' },
@@ -533,6 +546,7 @@ function render(filtroMes, textoBuscar) {
       const t = document.createElement('div');
       t.className = 'tarjeta' + (esHoy ? ' hoy-card' : '');
       t.innerHTML = `
+        ${d.poster ? `<img class="tarjeta-poster" src="${d.poster}" alt="Póster de ${d.nombre}" loading="lazy" onerror="this.style.display='none'"/>` : ''}
         <div class="tarjeta-fecha">${d.dia} de ${MESES[d.mes-1]}</div>
         <div class="tarjeta-nombre">${d.nombre}</div>
         <div class="tarjeta-tipo">${d.tipo}</div>
