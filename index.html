@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aniversarios · Mis Sesgos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --negro:     #0a0a0a;
+      --carbón:    #111111;
+      --grafito:   #1c1c1c;
+      --plomo:     #2e2e2e;
+      --plata:     #8a8a8a;
+      --niebla:    #c4c4c4;
+      --crema:     #f0ead8;
+      --oro:       #c9a84c;
+      --oro-suave: #e8c97a;
+      --rojo:      #a02020;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--negro);
+      color: var(--crema);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+    }
+
+    /* ── CABECERA ── */
+    header {
+      position: relative;
+      text-align: center;
+      padding: 4rem 1.5rem 3rem;
+      border-bottom: 1px solid var(--plomo);
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(255,255,255,0.012) 3px,
+        rgba(255,255,255,0.012) 4px
+      );
+      pointer-events: none;
+    }
+    .header-eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      color: var(--oro);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 8vw, 6rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: var(--crema);
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--oro);
+    }
+    .header-sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--plata);
+      letter-spacing: 0.15em;
+      margin-top: 1.2rem;
+    }
+
+    /* ── HOY ── */
+    #hoy-banner {
+      background: var(--grafito);
+      border-bottom: 1px solid var(--plomo);
+      padding: 1rem 1.5rem;
+      text-align: center;
+    }
+    #hoy-banner .hoy-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--oro);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+    #hoy-lista {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--crema);
+      font-style: italic;
+    }
+
+    /* ── CONTROLES ── */
+    #controles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--plomo);
+      background: var(--carbón);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    #buscar {
+      flex: 1;
+      min-width: 180px;
+      background: var(--grafito);
+      border: 1px solid var(--plomo);
+      color: var(--crema);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      padding: 0.5rem 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    #buscar:focus { border-color: var(--oro); }
+    #buscar::placeholder { color: var(--plata); }
+
+    .filtro-mes {
+      background: var(--grafito);
+      border: 1px solid var(--plomo);
+      color: var(--niebla);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      padding: 0.5rem 0.85rem;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .filtro-mes:hover, .filtro-mes:focus { border-color: var(--oro); color: var(--crema); }
+
+    #ir-hoy {
+      background: var(--rojo);
+      border: none;
+      color: var(--crema);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: background 0.2s;
+    }
+    #ir-hoy:hover { background: #c02828; }
+
+    /* ── GRID PRINCIPAL ── */
+    #contenido {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    .mes-seccion {
+      margin-bottom: 3rem;
+    }
+    .mes-titulo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--oro);
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid var(--plomo);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+    }
+    .mes-titulo span {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--plata);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .tarjetas {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .tarjeta {
+      background: var(--grafito);
+      border: 1px solid var(--plomo);
+      padding: 1rem 1.1rem;
+      cursor: default;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .tarjeta:hover {
+      border-color: var(--oro);
+      background: var(--plomo);
+    }
+    .tarjeta.hoy-card {
+      border-color: var(--oro);
+      background: #1e1a10;
+    }
+    .tarjeta.hoy-card::before {
+      content: '●';
+      position: absolute;
+      top: 0.6rem;
+      right: 0.75rem;
+      color: var(--oro);
+      font-size: 0.45rem;
+    }
+    .tarjeta-fecha {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--oro-suave);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.35rem;
+    }
+    .tarjeta-nombre {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      color: var(--crema);
+      line-height: 1.3;
+    }
+    .tarjeta-tipo {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      color: var(--plata);
+      letter-spacing: 0.08em;
+      margin-top: 0.4rem;
+      text-transform: uppercase;
+    }
+
+    /* sin resultados */
+    #sin-resultados {
+      display: none;
+      text-align: center;
+      padding: 4rem 1rem;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: var(--plata);
+      font-size: 1.1rem;
+    }
+
+    /* ── PIE ── */
+    footer {
+      border-top: 1px solid var(--plomo);
+      text-align: center;
+      padding: 1.5rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--plata);
+      letter-spacing: 0.1em;
+    }
+
+    @media (max-width: 600px) {
+      .tarjetas { grid-template-columns: 1fr 1fr; }
+      #controles { flex-direction: column; }
+      #buscar, .filtro-mes, #ir-hoy { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <p class="header-eyebrow">Lejardi · Archivo personal</p>
+  <h1>Mis <em>Sesgos</em></h1>
+  <p class="header-sub">Aniversarios · Cine · Música · Arte · Literatura</p>
+</header>
+
+<div id="hoy-banner">
+  <span class="hoy-label">Hoy se cumplen años de —</span>
+  <div id="hoy-lista">cargando…</div>
+</div>
+
+<div id="controles">
+  <input id="buscar" type="search" placeholder="Buscar nombre…" />
+  <select class="filtro-mes" id="filtro-mes">
+    <option value="">Todos los meses</option>
+    <option value="1">Enero</option>
+    <option value="2">Febrero</option>
+    <option value="3">Marzo</option>
+    <option value="4">Abril</option>
+    <option value="5">Mayo</option>
+    <option value="6">Junio</option>
+    <option value="7">Julio</option>
+    <option value="8">Agosto</option>
+    <option value="9">Septiembre</option>
+    <option value="10">Octubre</option>
+    <option value="11">Noviembre</option>
+    <option value="12">Diciembre</option>
+  </select>
+  <button id="ir-hoy">▸ Ir a hoy</button>
+</div>
+
+<main id="contenido"></main>
+<div id="sin-resultados">No se encontraron resultados.</div>
+
+<footer>MIS SESGOS · LEJARDI · ARCHIVO PERSONAL</footer>
+
+<script>
+const MESES = [
+  'Enero','Febrero','Marzo','Abril','Mayo','Junio',
+  'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'
+];
+
+// ── BASE DE DATOS COMPLETA ──
+const datos = [
+  // ENERO
+  { mes:1, dia:2,  nombre:'Jorge Cao', tipo:'Actor' },
+  { mes:1, dia:4,  nombre:'Samuel Claxton', tipo:'Actor' },
+  { mes:1, dia:4,  nombre:'Tito Junco Martínez', tipo:'Actor' },
+  { mes:1, dia:9,  nombre:'Fórmula V', tipo:'Música' },
+  { mes:1, dia:12, nombre:'Derubín Jácome', tipo:'Actor' },
+  { mes:1, dia:16, nombre:'Ricardo Darín', tipo:'Actor' },
+  { mes:1, dia:18, nombre:'Sergio Vitier', tipo:'Música' },
+  { mes:1, dia:19, nombre:'Mario Limonta', tipo:'Actor' },
+  { mes:1, dia:19, nombre:'Jerzy Kawalerowicz', tipo:'Director' },
+  { mes:1, dia:19, nombre:'Mario Balmaseda', tipo:'Actor' },
+  { mes:1, dia:20, nombre:'Federico Fellini', tipo:'Director' },
+  { mes:1, dia:22, nombre:'Luis Alberto Ramírez', tipo:'Cineasta' },
+  { mes:1, dia:26, nombre:'Roger Vadim', tipo:'Director' },
+  { mes:1, dia:28, nombre:'Isabel Moreno', tipo:'Actriz' },
+  { mes:1, dia:29, nombre:'Juan Padrón', tipo:'Animador' },
+  { mes:1, dia:30, nombre:'Sarah Caroline Coleman', tipo:'Cineasta' },
+  { mes:1, dia:31, nombre:'Patricio Wood', tipo:'Actor' },
+  // FEBRERO
+  { mes:2, dia:2,  nombre:'Věra Chytilová', tipo:'Directora' },
+  { mes:2, dia:6,  nombre:'María Teresa Vera', tipo:'Música' },
+  { mes:2, dia:9,  nombre:'Madre Juana de los Ángeles', tipo:'Estreno' },
+  { mes:2, dia:12, nombre:'Michael McDonald', tipo:'Música' },
+  { mes:2, dia:19, nombre:'Los paraguas de Cherburgo', tipo:'Estreno' },
+  { mes:2, dia:22, nombre:'Giulietta Masina', tipo:'Actriz' },
+  { mes:2, dia:24, nombre:'Pablo Milanés', tipo:'Música' },
+  { mes:2, dia:28, nombre:'Romana Elena Burguez González', tipo:'Cineasta' },
+  { mes:2, dia:28, nombre:'Vincente Minnelli', tipo:'Director' },
+  // MARZO
+  { mes:3, dia:1,  nombre:'Leo Brouwer', tipo:'Música' },
+  { mes:3, dia:1,  nombre:'Jacques Rivette', tipo:'Director' },
+  { mes:3, dia:4,  nombre:'Miriam Makeba', tipo:'Música' },
+  { mes:3, dia:5,  nombre:'Pier Paolo Pasolini', tipo:'Director' },
+  { mes:3, dia:6,  nombre:'Andrzej Wajda', tipo:'Director' },
+  { mes:3, dia:7,  nombre:'Anna Magnani', tipo:'Actriz' },
+  { mes:3, dia:8,  nombre:'Santiago Álvarez', tipo:'Director' },
+  { mes:3, dia:10, nombre:'Sara Montiel', tipo:'Actriz' },
+  { mes:3, dia:12, nombre:'Liza Minnelli', tipo:'Actriz / Música' },
+  { mes:3, dia:14, nombre:'China Zorrilla', tipo:'Actriz' },
+  { mes:3, dia:14, nombre:'Glauber Rocha', tipo:'Director' },
+  { mes:3, dia:17, nombre:'Nat King Cole', tipo:'Música' },
+  { mes:3, dia:17, nombre:'José Milián', tipo:'Actor' },
+  { mes:3, dia:19, nombre:'José Antonio Rivero', tipo:'Cineasta' },
+  { mes:3, dia:19, nombre:'José Antonio Rodríguez', tipo:'Cineasta' },
+  { mes:3, dia:25, nombre:'Mina', tipo:'Música' },
+  { mes:3, dia:26, nombre:'Diana Ross', tipo:'Música' },
+  { mes:3, dia:27, nombre:"Singin' in the Rain", tipo:'Estreno' },
+  // ABRIL
+  { mes:4, dia:2,  nombre:'Hombre mirando al Sudeste', tipo:'Estreno' },
+  { mes:4, dia:4,  nombre:'Andréi Tarkovski', tipo:'Director' },
+  { mes:4, dia:5,  nombre:'Bette Davis', tipo:'Actriz' },
+  { mes:4, dia:6,  nombre:'Gerardo Fernández', tipo:'Cineasta' },
+  { mes:4, dia:9,  nombre:'Jean-Paul Belmondo', tipo:'Actor' },
+  { mes:4, dia:13, nombre:'Stanley Donen', tipo:'Director' },
+  { mes:4, dia:15, nombre:'Claudia Cardinale', tipo:'Actriz' },
+  { mes:4, dia:17, nombre:'Jerónimo Labrada', tipo:'Director de fotografía' },
+  { mes:4, dia:27, nombre:'Anouk Aimée', tipo:'Actriz' },
+  // MAYO
+  { mes:5, dia:4,  nombre:'Tatiana Samóilova', tipo:'Actriz' },
+  { mes:5, dia:7,  nombre:'Roberto Perdomo', tipo:'Cineasta' },
+  { mes:5, dia:8,  nombre:'Roberto Rossellini', tipo:'Director' },
+  { mes:5, dia:12, nombre:'Beatriz Valdés', tipo:'Actriz' },
+  { mes:5, dia:16, nombre:'Mario Monicelli', tipo:'Director' },
+  { mes:5, dia:28, nombre:'Servando Cabrera Moreno', tipo:'Artista plástico' },
+  { mes:5, dia:28, nombre:'Omar Hechavarría', tipo:'Cineasta' },
+  // JUNIO
+  { mes:6, dia:3,  nombre:'Joséphine Baker', tipo:'Artista' },
+  { mes:6, dia:5,  nombre:'Vicente Revuelta', tipo:'Actor' },
+  { mes:6, dia:6,  nombre:'Esperando la carroza', tipo:'Estreno' },
+  { mes:6, dia:8,  nombre:'Julito Martínez', tipo:'Actor' },
+  { mes:6, dia:20, nombre:'Asseneh Rodríguez', tipo:'Cineasta' },
+  { mes:6, dia:23, nombre:'Bob Fosse', tipo:'Director / Coreógrafo' },
+  { mes:6, dia:24, nombre:'Claude Chabrol', tipo:'Director' },
+  { mes:6, dia:25, nombre:'George Orwell', tipo:'Escritor' },
+  { mes:6, dia:25, nombre:'Sidney Lumet', tipo:'Director' },
+  { mes:6, dia:27, nombre:'Janusz Kaminski', tipo:'Director de fotografía' },
+  { mes:6, dia:28, nombre:'Kathy Bates', tipo:'Actriz' },
+  { mes:6, dia:28, nombre:'José Massip', tipo:'Director' },
+  { mes:6, dia:28, nombre:'Mel Brooks', tipo:'Director' },
+  { mes:6, dia:29, nombre:'Bernard Herrmann', tipo:'Compositor' },
+  { mes:6, dia:30, nombre:'Diego Trujillo', tipo:'Actor' },
+  // JULIO
+  { mes:7, dia:1,  nombre:'William Wyler', tipo:'Director' },
+  { mes:7, dia:1,  nombre:'Sydney Pollack', tipo:'Director' },
+  { mes:7, dia:3,  nombre:'Ken Russell', tipo:'Director' },
+  { mes:7, dia:3,  nombre:'Franz Kafka', tipo:'Escritor' },
+  { mes:7, dia:3,  nombre:'Kool and the Gang', tipo:'Música · primer sencillo' },
+  { mes:7, dia:4,  nombre:'Neil Simon', tipo:'Dramaturgo' },
+  { mes:7, dia:6,  nombre:'Janet Leigh', tipo:'Actriz' },
+  { mes:7, dia:6,  nombre:'Frida Kahlo', tipo:'Artista plástica' },
+  { mes:7, dia:6,  nombre:'Jennifer Saunders', tipo:'Actriz / Guionista' },
+  { mes:7, dia:7,  nombre:'Ringo Starr', tipo:'Música' },
+  { mes:7, dia:7,  nombre:'George Cukor', tipo:'Director' },
+  { mes:7, dia:7,  nombre:'Vittorio De Sica', tipo:'Director' },
+  { mes:7, dia:10, nombre:'Nicolás Guillén', tipo:'Poeta' },
+  { mes:7, dia:13, nombre:'Sara González', tipo:'Música' },
+  { mes:7, dia:13, nombre:'Philip Seymour Hoffman', tipo:'Actor' },
+  { mes:7, dia:14, nombre:'Ingmar Bergman', tipo:'Director' },
+  { mes:7, dia:26, nombre:'Luis Carbonell', tipo:'Artista' },
+  { mes:7, dia:26, nombre:'Vladimir Cruz', tipo:'Actor' },
+  { mes:7, dia:26, nombre:'Stanley Kubrick', tipo:'Director' },
+  // AGOSTO
+  { mes:8, dia:4,  nombre:'Brindis de Salas', tipo:'Músico' },
+  { mes:8, dia:4,  nombre:'Carlos Ruiz de la Tejera', tipo:'Cineasta' },
+  { mes:8, dia:13, nombre:'Raúl Pérez Ureta', tipo:'Cineasta' },
+  { mes:8, dia:13, nombre:'Alfred Hitchcock', tipo:'Director' },
+  { mes:8, dia:15, nombre:'Alden Knight', tipo:'Actor' },
+  { mes:8, dia:17, nombre:'The Beatles · debut Hamburgo', tipo:'Música' },
+  { mes:8, dia:18, nombre:'Roman Polanski', tipo:'Director' },
+  { mes:8, dia:20, nombre:'Andréi Konchalovski', tipo:'Director' },
+  { mes:8, dia:21, nombre:'Sonia Calero', tipo:'Actriz' },
+  { mes:8, dia:23, nombre:'Gene Kelly', tipo:'Actor / Director' },
+  { mes:8, dia:24, nombre:'Benny Moré', tipo:'Música' },
+  { mes:8, dia:25, nombre:'Néstor Jiménez', tipo:'Actor' },
+  { mes:8, dia:28, nombre:'Vladímir Ivashov', tipo:'Actor' },
+  { mes:8, dia:30, nombre:'Félix Pérez Ortiz', tipo:'Cineasta' },
+  { mes:8, dia:30, nombre:'Rosa Marquetti', tipo:'Música' },
+  // SEPTIEMBRE
+  { mes:9, dia:2,  nombre:'Eduardo de la Torre', tipo:'Cineasta' },
+  { mes:9, dia:3,  nombre:'Juan Carlos Tabío', tipo:'Director' },
+  { mes:9, dia:4,  nombre:'Isabel Santos', tipo:'Actriz' },
+  { mes:9, dia:5,  nombre:'Livio Delgado', tipo:'Director de fotografía' },
+  { mes:9, dia:11, nombre:'Eusebio Leal Spengler', tipo:'Historiador' },
+  { mes:9, dia:11, nombre:'Diana Fernández', tipo:'Actriz' },
+  { mes:9, dia:12, nombre:'Silvia Planas', tipo:'Actriz' },
+  { mes:9, dia:12, nombre:'Barry White', tipo:'Música' },
+  { mes:9, dia:17, nombre:'Jorge Pérez Pagés', tipo:'Cineasta' },
+  { mes:9, dia:17, nombre:'Pedro Luis Ferrer', tipo:'Música' },
+  { mes:9, dia:17, nombre:'Raúl Pomares', tipo:'Actor' },
+  { mes:9, dia:18, nombre:'Donato Poveda', tipo:'Cineasta' },
+  { mes:9, dia:21, nombre:'Earth, Wind & Fire', tipo:'Música · día oficial' },
+  { mes:9, dia:27, nombre:'Miklós Jancsó', tipo:'Director' },
+  { mes:9, dia:28, nombre:'Marcello Mastroianni', tipo:'Actor' },
+  { mes:9, dia:28, nombre:'Manuel Porto', tipo:'Actor' },
+  { mes:9, dia:29, nombre:'Adolfo Llauradó', tipo:'Actor' },
+  { mes:9, dia:29, nombre:'Michelangelo Antonioni', tipo:'Director' },
+  { mes:9, dia:30, nombre:'Senel Paz', tipo:'Escritor / Guionista' },
+  { mes:9, dia:30, nombre:'Shaft · tema musical', tipo:'Música' },
+  // OCTUBRE
+  { mes:10, dia:10, nombre:'Ed Wood', tipo:'Director' },
+  { mes:10, dia:11, nombre:'Dawn French', tipo:'Actriz / Guionista' },
+  { mes:10, dia:17, nombre:'Adela Legrá', tipo:'Actriz' },
+  { mes:10, dia:21, nombre:'Celia Cruz', tipo:'Música' },
+  { mes:10, dia:21, nombre:'Carlos Díaz', tipo:'Director teatral' },
+  { mes:10, dia:21, nombre:'Nikita Mijalkov', tipo:'Director' },
+  { mes:10, dia:22, nombre:'Catherine Deneuve', tipo:'Actriz' },
+  { mes:10, dia:25, nombre:'Betty, la fea · estreno TV', tipo:'Estreno' },
+  { mes:10, dia:27, nombre:'Raúl Rodríguez Cabrera', tipo:'Cineasta' },
+  { mes:10, dia:28, nombre:'Enrique Pineda Barnet', tipo:'Director' },
+  { mes:10, dia:29, nombre:'Omara Portuondo', tipo:'Música' },
+  // NOVIEMBRE
+  { mes:11, dia:1,  nombre:'Teresa Ordoqui', tipo:'Cineasta' },
+  { mes:11, dia:2,  nombre:'Luchino Visconti', tipo:'Director' },
+  { mes:11, dia:3,  nombre:'Monica Vitti', tipo:'Actriz' },
+  { mes:11, dia:9,  nombre:'Iván Nápoles', tipo:'Actor' },
+  { mes:11, dia:10, nombre:'Luis Alberto García', tipo:'Actor' },
+  { mes:11, dia:11, nombre:'Vicente Feliú', tipo:'Música' },
+  { mes:11, dia:14, nombre:'Nelson Rodríguez', tipo:'Editor' },
+  { mes:11, dia:14, nombre:'Antonio Gades', tipo:'Bailarín / Coreógrafo' },
+  { mes:11, dia:14, nombre:'Raquel Revuelta', tipo:'Actriz' },
+  { mes:11, dia:15, nombre:'Petula Clark', tipo:'Música' },
+  { mes:11, dia:17, nombre:'Rock Hudson', tipo:'Actor' },
+  { mes:11, dia:17, nombre:'Blood, Sweat & Tears', tipo:'Música · formación' },
+  { mes:11, dia:19, nombre:'Fernando Pérez', tipo:'Director' },
+  { mes:11, dia:19, nombre:'Manuel Pérez Paredes', tipo:'Director' },
+  { mes:11, dia:20, nombre:'Alekséi Batálov', tipo:'Actor' },
+  { mes:11, dia:21, nombre:'Lilia Lazo', tipo:'Actriz' },
+  { mes:11, dia:24, nombre:'Libertad Lamarque', tipo:'Actriz / Música' },
+  { mes:11, dia:24, nombre:'Salvador Wood', tipo:'Actor' },
+  { mes:11, dia:29, nombre:'Silvio Rodríguez', tipo:'Música' },
+  // DICIEMBRE
+  { mes:12, dia:3,  nombre:'Jean-Luc Godard', tipo:'Director' },
+  { mes:12, dia:4,  nombre:'Consuelo Vidal', tipo:'Actriz' },
+  { mes:12, dia:9,  nombre:'Judi Dench', tipo:'Actriz' },
+  { mes:12, dia:15, nombre:'Germán Piniella', tipo:'Cineasta' },
+  { mes:12, dia:17, nombre:'Lizette Vila', tipo:'Directora' },
+  { mes:12, dia:17, nombre:'Lázaro Gómez', tipo:'Cineasta' },
+  { mes:12, dia:19, nombre:'Syd Field', tipo:'Guionista / Teórico' },
+  { mes:12, dia:21, nombre:'Alicia Alonso', tipo:'Bailarina' },
+  { mes:12, dia:27, nombre:'Eliseo Subiela', tipo:'Director' },
+  { mes:12, dia:29, nombre:'Lautaro Murúa', tipo:'Actor / Director' },
+];
+
+// ── LÓGICA ──
+const hoy = new Date();
+const diaHoy = hoy.getDate();
+const mesHoy = hoy.getMonth() + 1;
+
+function render(filtroMes, textoBuscar) {
+  const contenido = document.getElementById('contenido');
+  const sinRes    = document.getElementById('sin-resultados');
+  contenido.innerHTML = '';
+
+  const busq = textoBuscar.toLowerCase().trim();
+  const mesesAMostrar = filtroMes ? [parseInt(filtroMes)] : [...Array(12).keys()].map(i => i+1);
+  let total = 0;
+
+  mesesAMostrar.forEach(m => {
+    let entradas = datos.filter(d => d.mes === m);
+    if (busq) entradas = entradas.filter(d => d.nombre.toLowerCase().includes(busq) || d.tipo.toLowerCase().includes(busq));
+    if (!entradas.length) return;
+
+    total += entradas.length;
+    const sec = document.createElement('section');
+    sec.className = 'mes-seccion';
+    sec.id = `mes-${m}`;
+
+    sec.innerHTML = `<h2 class="mes-titulo">${MESES[m-1]} <span>${entradas.length} entrada${entradas.length!==1?'s':''}</span></h2>`;
+
+    const grid = document.createElement('div');
+    grid.className = 'tarjetas';
+
+    entradas.forEach(d => {
+      const esHoy = d.mes === mesHoy && d.dia === diaHoy;
+      const t = document.createElement('div');
+      t.className = 'tarjeta' + (esHoy ? ' hoy-card' : '');
+      t.innerHTML = `
+        <div class="tarjeta-fecha">${d.dia} de ${MESES[d.mes-1]}</div>
+        <div class="tarjeta-nombre">${d.nombre}</div>
+        <div class="tarjeta-tipo">${d.tipo}</div>
+      `;
+      grid.appendChild(t);
+    });
+
+    sec.appendChild(grid);
+    contenido.appendChild(sec);
+  });
+
+  sinRes.style.display = total === 0 ? 'block' : 'none';
+}
+
+function bannerHoy() {
+  const hoyEntradas = datos.filter(d => d.mes === mesHoy && d.dia === diaHoy);
+  const el = document.getElementById('hoy-lista');
+  if (!hoyEntradas.length) {
+    el.textContent = 'Ningún aniversario registrado para hoy.';
+  } else {
+    el.textContent = hoyEntradas.map(d => d.nombre).join('  ·  ');
+  }
+}
+
+// Eventos
+document.getElementById('buscar').addEventListener('input', e => {
+  render(document.getElementById('filtro-mes').value, e.target.value);
+});
+document.getElementById('filtro-mes').addEventListener('change', e => {
+  render(e.target.value, document.getElementById('buscar').value);
+});
+document.getElementById('ir-hoy').addEventListener('click', () => {
+  document.getElementById('filtro-mes').value = '';
+  document.getElementById('buscar').value = '';
+  render('', '');
+  const sec = document.getElementById(`mes-${mesHoy}`);
+  if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+// Init
+bannerHoy();
+render('', '');
+</script>
+</body>
+</html>
